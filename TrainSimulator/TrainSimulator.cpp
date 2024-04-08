@@ -15,8 +15,8 @@
 
 #include <glfw3.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+//#define STB_IMAGE_IMPLEMENTATION
+//#include <stb_image.h>
 
 #pragma comment (lib, "glfw3dll.lib")
 #pragma comment (lib, "glew32.lib")
@@ -170,8 +170,8 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		lightPos.x = cos(glfwGetTime());
-		lightPos.y = sin(glfwGetTime());
+		lightPos.x = (float)cos(glfwGetTime());
+		lightPos.y = (float)sin(glfwGetTime());
 
 		lightingShader.Use();
 		lightingShader.SetVec3("objectColor", 0.5f, 1.0f, 0.31f);

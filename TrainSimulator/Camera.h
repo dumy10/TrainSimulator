@@ -17,7 +17,7 @@ public:
 		RIGHT,
 		UP,
 		DOWN
-	};
+	} ECAMERA_MOVEMENT_TYPE;
 
 	Camera(const int width, const int height, const glm::vec3& position);
 	void Set(const int width, const int height, const glm::vec3& position);
