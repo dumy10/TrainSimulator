@@ -43,11 +43,6 @@ void processInput(GLFWwindow* window);
 double deltaTime = 0.0f;	// time between current frame and last frame
 double lastFrame = 0.0f;
 
-float ambientStrength = 0.1f;
-float diffuseStrength = 0.5f;
-float specularStrength = 0.5f;
-float shininess = 2.0f;
-float radius = 1.0f;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -175,19 +170,14 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		lightPos.x = radius * cos(glfwGetTime());
-		lightPos.y = radius * sin(glfwGetTime());
+		lightPos.x = cos(glfwGetTime());
+		lightPos.y = sin(glfwGetTime());
 
 		lightingShader.Use();
 		lightingShader.SetVec3("objectColor", 0.5f, 1.0f, 0.31f);
 		lightingShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
 		lightingShader.SetVec3("lightPos", lightPos);
 		lightingShader.SetVec3("viewPos", pCamera->GetPosition());
-
-		lightingShader.SetFloat("Ka", ambientStrength);
-		lightingShader.SetFloat("Kd", diffuseStrength);
-		lightingShader.SetFloat("Ks", specularStrength);
-		lightingShader.SetFloat("shininess", shininess);
 
 		lightingShader.SetMat4("projection", pCamera->GetProjectionMatrix());
 		lightingShader.SetMat4("view", pCamera->GetViewMatrix());
