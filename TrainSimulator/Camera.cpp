@@ -118,9 +118,8 @@ void Camera::MouseControl(float xPos, float yPos)
 
 void Camera::ProcessMouseScroll(float yOffset)
 {
-	if (FoVy >= 1.0f && FoVy <= 90.0f) {
+	if (FoVy >= 1.0f && FoVy <= 120.0f) 
 		FoVy -= yOffset;
-	}
 	if (FoVy <= 1.0f)
 		FoVy = 1.0f;
 	if (FoVy >= 120.0f)
