@@ -72,22 +72,28 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>..\_external\glew-2.1.0\include;..\_external\glm;..\_external\glfw-x64\include\GLFW\;..\_external\stb\;..\_external\assimp\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>..\_external\glew-2.1.0\lib;..\_external\glfw-x64\lib-vc2022;..\_external\assimp\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\_external\glew-2.1.0\lib\x64;..\_external\glfw-x64\lib-vc2022;..\_external\assimp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>..\_external\glew-2.1.0\include;..\_external\glm;..\_external\glfw-x64\include\GLFW\;..\_external\stb\;$(IncludePath)</IncludePath>
     <LibraryPath>..\_external\glew-2.1.0\lib;..\_external\glfw-x64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>..\_external\glad\include;..\_external\glm-stable\glm;..\_external\glfw-3.3.4.bin.WIN32\include\GLFW;..\_external\glew-2.1.0-win32\glew-2.1.0\include\GL;..\_external\stb-master;..\_external\assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\_external\glew-2.1.0-win32\glew-2.1.0\lib\Release\Win32;..\_external\glfw-3.3.4.bin.WIN32\lib-vc2019;..\_external\assimp\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32s.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\_external\glad\src\glad.c" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -146,6 +153,8 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Lamp.fs">
@@ -156,6 +165,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </None>
+    <None Include="model.fs" />
+    <None Include="model.vs" />
     <None Include="PhongLight.fs">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -176,6 +187,8 @@
     <None Include="ShadowMappingDepth.vs">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
+    <None Include="skybox.fs" />
+    <None Include="skybox.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
