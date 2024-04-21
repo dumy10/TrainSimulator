@@ -347,10 +347,7 @@ int main()
 		auto _bucuresti = glm::mat4(1.0f);
 		auto _brasov = glm::mat4(1.0f);
 
-		if (!isMoving)
-			train = translate(train, glm::vec3(startX, startY, startZ));
-		else
-			train = translate(train, MoveTrain(startX, startY, startZ, rotY, rotZ));
+		train = (isMoving ? translate(train, MoveTrain(startX, startY, startZ, rotY, rotZ)) : translate(train, glm::vec3(startX, startY, startZ)));
 
 		train = scale(train, glm::vec3(15.0f, 15.0f, 15.0f));
 		train = glm::rotate(train, glm::radians(rotY), glm::vec3(0, 1, 0));
