@@ -44,6 +44,9 @@ enum LightAction
 	SUNRISE,
 	SUNSET
 };
+float ambientStrength = 0.1f;
+float specularStrength = 0.5f;
+float diffuseStrength = 0.5f;
 
 //camera type
 enum class CameraType
@@ -60,7 +63,6 @@ TODO:
 - Position the train model on the track in 'bucuresti'
 - Implement the MoveTrain function
 - Adjust the camera view according to the camera type after adding the train model and while moving the train
-- Add uniform variables for the light in the shader
 - (Maybe) Add train tracks in the terrain
 */
 int main()
@@ -295,6 +297,9 @@ int main()
 		lightingShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
 		lightingShader.SetVec3("lightPos", lightPos);
 		lightingShader.SetVec3("viewPos", camera.Position);
+		lightingShader.SetFloat("ambientStrength", ambientStrength);
+		lightingShader.SetFloat("specularStrength", specularStrength);
+		lightingShader.SetFloat("diffuseStrength", diffuseStrength);
 
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
@@ -375,9 +380,19 @@ int main()
 
 
 		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) // day
+		{
 			cubemapTexture = LoadCubemap(daySkybox);
+			ambientStrength = 0.1f;
+			specularStrength = 0.5f;
+			diffuseStrength = 0.5f;
+		}
 		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) // night
+		{
 			cubemapTexture = LoadCubemap(sunsetSkybox);
+			ambientStrength = 0.5f;
+			specularStrength = 0.1f;
+			diffuseStrength = 0.1f;
+		}
 
 		switch (cameraType)
 		{
@@ -401,7 +416,6 @@ int main()
 		skyboxShader.SetMat4("projection", projection);
 		// skybox cube
 		glBindVertexArray(skyboxVAO);
-		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
