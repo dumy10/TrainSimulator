@@ -29,7 +29,7 @@ float speed = 1.0f;
 bool isMoving = false;
 
 // camera
-Camera camera(glm::vec3(-2900.0f, -190.0f, -400.0f));
+Camera camera(glm::vec3(600.0f, -50.0f, 100.0f));
 float lastX = static_cast<float>(SCR_WIDTH) / 2.0;
 float lastY = static_cast<float>(SCR_HEIGHT) / 2.0;
 bool firstMouse = true;
@@ -57,10 +57,11 @@ CameraType cameraType = CameraType::FREE;
 /*
 TODO:
 - Add a train model
-- Reposition 'brasov' and 'bucuresti' models
 - Position the train model on the track in 'bucuresti'
 - Implement the MoveTrain function
 - Adjust the camera view according to the camera type after adding the train model and while moving the train
+- Add uniform variables for the light in the shader
+- (Maybe) Add train tracks in the terrain
 */
 int main()
 {
@@ -253,13 +254,9 @@ int main()
 	skyboxShader.Use();
 	skyboxShader.SetInt("skybox", 0);
 
-	float startX = -265.0f;
-	float startY = -16.0f;
-	float startZ = 250.0f;
-
-	float moveX = -10.0f;
-	float moveY = 0.0f;
-	float moveZ = 0.0f;
+	float startX = 400.0f;
+	float startY = 100.0f;
+	float startZ = 100.0f;
 
 	float degreesY = 0.0f;
 	float degreesZ = 0.0f;
@@ -346,13 +343,10 @@ int main()
 		auto _bucuresti = glm::mat4(1.0f);
 		auto _brasov = glm::mat4(1.0f);
 
-
 		if (!isMoving)
 			train = translate(train, glm::vec3(startX, startY, startZ));
 		else
-		{
 			train = translate(train, MoveTrain(startX, startY, startZ, rotY, rotZ));
-		}
 
 		train = scale(train, glm::vec3(0.3f, 0.3f, 0.3f));
 		train = glm::rotate(train, glm::radians(rotY), glm::vec3(0, 1, 0));
@@ -361,24 +355,21 @@ int main()
 		driverWagon.Draw(trainShader);
 
 		// terrain
-
 		_terrain = translate(_terrain, glm::vec3(-80.0f, -350.0f, 1000.0f));
 		_terrain = scale(_terrain, glm::vec3(250.0f, 250.0f, 250.0f));
 		terrainShader.SetMat4("model", _terrain);
 		terrain.Draw(terrainShader);
 
 		// bucuresti
-		// needs a little bit more repositioning and scaling
 		_bucuresti = translate(_bucuresti, glm::vec3(800.0f, -280.0f, -935.0f));
-		_bucuresti = scale(_bucuresti, glm::vec3(25.0f, 25.0f, 25.0f));
+		_bucuresti = scale(_bucuresti, glm::vec3(100.0f, 100.0f, 100.0f));
 		bucurestiMapShader.SetMat4("model", _bucuresti);
 		bucuresti.Draw(bucurestiMapShader);
 
 		// brasov
-		// needs a little bit more repositioning
-		_brasov = translate(_brasov, glm::vec3(-3000.0f, -220.0f, -375.0f));
+		_brasov = translate(_brasov, glm::vec3(-3105.0f, -225.0f, -375.0f));
 		_brasov = scale(_brasov, glm::vec3(25.0f, 25.0f, 25.0f));
-		_brasov = glm::rotate(_brasov, glm::radians(-30.0f), glm::vec3(0, 1, 0));
+		_brasov = glm::rotate(_brasov, glm::radians(-50.0f), glm::vec3(0, 1, 0));
 		brasovShader.SetMat4("model", _brasov);
 		brasov.Draw(brasovShader);
 
@@ -387,7 +378,6 @@ int main()
 			cubemapTexture = LoadCubemap(daySkybox);
 		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) // night
 			cubemapTexture = LoadCubemap(sunsetSkybox);
-
 
 		switch (cameraType)
 		{
@@ -505,7 +495,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) // stop train
 		isMoving = false;
 	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) // increase speed
-		if (speed <= 4.5)
+		if (speed <= 3.5)
 			speed += 0.5;
 	if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) // decrease speed
 		if (speed > 1.5)
