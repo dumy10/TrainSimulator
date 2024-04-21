@@ -29,7 +29,7 @@ float speed = 1.0f;
 bool isMoving = false;
 
 // camera
-Camera camera(glm::vec3(600.0f, -50.0f, 100.0f));
+Camera camera(glm::vec3(800.0f, -100.0f, -935.0f));
 float lastX = static_cast<float>(SCR_WIDTH) / 2.0;
 float lastY = static_cast<float>(SCR_HEIGHT) / 2.0;
 bool firstMouse = true;
@@ -352,7 +352,7 @@ int main()
 		else
 			train = translate(train, MoveTrain(startX, startY, startZ, rotY, rotZ));
 
-		train = scale(train, glm::vec3(0.3f, 0.3f, 0.3f));
+		train = scale(train, glm::vec3(15.0f, 15.0f, 15.0f));
 		train = glm::rotate(train, glm::radians(rotY), glm::vec3(0, 1, 0));
 		train = glm::rotate(train, glm::radians(0.0f + rotZ), glm::vec3(0, 0, 1));
 		trainShader.SetMat4("model", train);
@@ -365,15 +365,15 @@ int main()
 		terrain.Draw(terrainShader);
 
 		// bucuresti
-		_bucuresti = translate(_bucuresti, glm::vec3(800.0f, -280.0f, -935.0f));
-		_bucuresti = scale(_bucuresti, glm::vec3(100.0f, 100.0f, 100.0f));
+		_bucuresti = translate(_bucuresti, glm::vec3(800.0f, -300.0f, -930.0f));
+		_bucuresti = scale(_bucuresti, glm::vec3(150.0f, 150.0f, 150.0f));
 		bucurestiMapShader.SetMat4("model", _bucuresti);
 		bucuresti.Draw(bucurestiMapShader);
 
 		// brasov
-		_brasov = translate(_brasov, glm::vec3(-3105.0f, -225.0f, -375.0f));
-		_brasov = scale(_brasov, glm::vec3(25.0f, 25.0f, 25.0f));
-		_brasov = glm::rotate(_brasov, glm::radians(-50.0f), glm::vec3(0, 1, 0));
+		_brasov = translate(_brasov, glm::vec3(-3550.0f, -210.0f, -350.0f));
+		_brasov = scale(_brasov, glm::vec3(50.0f, 50.0f, 50.0f));
+		_brasov = glm::rotate(_brasov, glm::radians(-75.0f), glm::vec3(0, 1, 0));
 		brasovShader.SetMat4("model", _brasov);
 		brasov.Draw(brasovShader);
 
