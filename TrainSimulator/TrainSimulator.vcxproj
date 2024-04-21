@@ -80,7 +80,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>..\_external\glad\include;..\_external\glm-stable\glm;..\_external\glfw-3.3.4.bin.WIN32\include\GLFW;..\_external\glew-2.1.0-win32\glew-2.1.0\include\GL;..\_external\stb-master;..\_external\assimp\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\_external\glew-2.1.0-win32\glew-2.1.0\lib\Release\Win32;..\_external\glfw-3.3.4.bin.WIN32\lib-vc2019;..\_external\assimp\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\_external\glew-2.1.0-win32\glew-2.1.0\lib;..\_external\glfw-3.3.4.bin.WIN32\lib-vc2019;..\_external\assimp\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
