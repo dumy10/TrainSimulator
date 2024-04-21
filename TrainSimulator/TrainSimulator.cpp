@@ -63,7 +63,6 @@ TODO:
 - Position the train model on the track in 'bucuresti'
 - Implement the MoveTrain function
 - Adjust the camera view according to the camera type after adding the train model and while moving the train
-- (Maybe) Add train tracks in the terrain
 */
 int main()
 {
