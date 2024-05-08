@@ -18,7 +18,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void processInput(GLFWwindow* window);
 unsigned int LoadTexture(const char* path);
 unsigned int LoadCubemap(std::vector<std::string> faces);
-glm::vec3 MoveTrain(float& X, float& Y, float& Z, float& DegreesY, float& DegreesZ);
+glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, float& degreesZ);
 void Menu();
 
 // settings
@@ -75,8 +75,6 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	float rotY = 0, rotZ = 0;
 
 	// glfw window creation
 	// --------------------
@@ -158,7 +156,7 @@ int main()
 		1.0f, -1.0f, 1.0f
 	};
 	std::cout << "Create skybox\n";
-	glm::vec3 lightPos(-10.f, 25.f, 10.0f);
+	glm::vec3 lightPos(840.28f, 989.16f, 1132.70f);
 
 	// build and compile shaders
 	// -------------------------
@@ -196,7 +194,6 @@ int main()
 	Model driverWagon(localPath.string() + "/Resources/train/train.obj");
 	Model terrain(localPath.string() + "/Resources/terrain/terrain.obj");
 	std::cout << "Loaded terrain\n";
-
 
 	Model bucuresti(localPath.string() + "/Resources/stations/bucurestiMap/bucuresti.obj");
 	Model brasov(localPath.string() + "/Resources/stations/brasovMap/brasov.obj");
@@ -255,13 +252,12 @@ int main()
 	skyboxShader.Use();
 	skyboxShader.SetInt("skybox", 0);
 
-	float startX = 400.0f;
-	float startY = 100.0f;
-	float startZ = 100.0f;
+	// Original position and rotation of the train in 'bucuresti'
+	glm::vec3 trainPosition(1580.0f, -242.0f, -1724.0f);
+	glm::vec3 trainRotation(0.0f, 309.0f, 0.0f);
 
-	float degreesY = 0.0f;
-	float degreesZ = 0.0f;
-
+	glm::vec3 prevPosition(0.0f, 0.0f, 0.0f);
+	glm::vec3 prevRotation(0.0f, 0.0f, 0.0f);
 
 	unsigned int lightCubeVAO;
 	glGenVertexArrays(1, &lightCubeVAO);
@@ -270,9 +266,6 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void*>(nullptr));
 	glEnableVertexAttribArray(0);
-
-	//lights
-	LightAction light_action = SUNRISE;
 
 	//shadows
 	glGenFramebuffers(1, &depthMapFBO);
@@ -347,11 +340,12 @@ int main()
 		auto _bucuresti = glm::mat4(1.0f);
 		auto _brasov = glm::mat4(1.0f);
 
-		train = (isMoving ? translate(train, MoveTrain(startX, startY, startZ, rotY, rotZ)) : translate(train, glm::vec3(startX, startY, startZ)));
+		train = (isMoving ? translate(train, MoveTrain(trainPosition, trainRotation.x, trainRotation.y, trainRotation.z)) : translate(train, trainPosition));
 
-		train = scale(train, glm::vec3(15.0f, 15.0f, 15.0f));
-		train = glm::rotate(train, glm::radians(rotY), glm::vec3(0, 1, 0));
-		train = glm::rotate(train, glm::radians(0.0f + rotZ), glm::vec3(0, 0, 1));
+		train = scale(train, glm::vec3(15.0f, 12.0f, 20.0f));
+		train = glm::rotate(train, glm::radians(trainRotation.x), glm::vec3(1, 0, 0));
+		train = glm::rotate(train, glm::radians(trainRotation.y), glm::vec3(0, 1, 0));
+		train = glm::rotate(train, glm::radians(trainRotation.z), glm::vec3(0, 0, 1));
 		trainShader.SetMat4("model", train);
 		driverWagon.Draw(trainShader);
 
@@ -389,16 +383,85 @@ int main()
 			specularStrength = 0.1f;
 			diffuseStrength = 0.1f;
 		}
+		// Debugging keys for train position and rotation
+		if (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS)
+		{
+			trainPosition.x += 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS)
+		{
+			trainPosition.x -= 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_3) == GLFW_PRESS)
+		{
+			trainPosition.z += 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
+		{
+			trainPosition.z -= 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
+		{
+			trainPosition.y += 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
+		{
+			trainPosition.y -= 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_7) == GLFW_PRESS)
+		{
+			trainRotation.y += 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
+		{
+			trainRotation.y -= 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
+		{
+			trainRotation.z += 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_DIVIDE) == GLFW_PRESS)
+		{
+			trainRotation.z -= 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_MULTIPLY) == GLFW_PRESS)
+		{
+			trainRotation.x += 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
+		{
+			trainRotation.x -= 0.5f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_KP_0) == GLFW_PRESS)
+		{
+			if (prevPosition != trainPosition)
+				std::cout << "Position: (" << trainPosition.x << " " << trainPosition.y << " " << trainPosition.z << ")" << std::endl;
+			prevPosition = trainPosition;
+
+			if (prevRotation != trainRotation)
+				std::cout << "Rotation: (" << trainRotation.x << " " << trainRotation.y << " " << trainRotation.z << ")" << std::endl;
+			prevRotation = trainRotation;
+		}
+		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		{
+			trainPosition = { 1580.0f, -242.0f, -1724.0f };
+			trainRotation = { 0.0f, 309.0f, 0.0f };
+		}
 
 		switch (cameraType)
 		{
 		case CameraType::FREE:
 			break;
 		case CameraType::THIRDPERSON:
-			camera.SetViewMatrix(glm::vec3(startX - 15, startY + 50, startZ + 100)); // 3rd person camera (dummy for now) TBI
+			camera.SetViewMatrix(glm::vec3(trainPosition.x - 250, trainPosition.y + 650, trainPosition.z + 1000)); 
 			break;
 		case CameraType::DRIVER:
-			camera.SetViewMatrix(glm::vec3(startX, startY + 2, startZ - 9.5)); // driver camera (dummy for now) TBI
+			if (trainRotation.x == 0.0f && trainRotation.y == 309.0f && trainRotation.z == 0)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 355.530, trainPosition.y + 80.1, trainPosition.z + 437.16));
+			else if (trainRotation.x == 0.0f && trainRotation.y == 305.0f && trainRotation.z == 0)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 379.861, trainPosition.y + 82.201, trainPosition.z + 403.254)); 
+			else
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 454.230, trainPosition.y + 111.90, trainPosition.z + 207.16));
 			break;
 		default:;
 		}
@@ -592,10 +655,24 @@ unsigned int LoadCubemap(std::vector<std::string> faces)
 	return textureID;
 }
 
-glm::vec3 MoveTrain(float& X, float& Y, float& Z, float& DegreesY, float& DegreesZ)
+glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, float& degreesZ)
 {
 	// to be implemented
-	return glm::vec3(X, Y, Z);
+	if (trainPosition.x > 1236.0f && trainPosition.z < -1398.0f)
+	{
+		trainPosition.x -= 0.4563f * speed;
+		trainPosition.z += 0.4883f * speed;
+	}
+	else if (trainPosition.x > 1253.0f && trainPosition.z < -1360.83)
+	{
+		if (degreesY > 305.0f)
+			degreesY -= 4.0f;
+
+		trainPosition.x -= 0.4563f * speed;
+		trainPosition.z += 0.7633f * speed;
+	}
+
+	return glm::vec3(trainPosition.x, trainPosition.y, trainPosition.z);
 }
 
 void Menu()

@@ -60,7 +60,7 @@ void Camera::SetViewMatrix(glm::vec3 pos)
 void Camera::PrintPosition()
 {
 	if (Position != prevPos)
-		std::cout << glm::to_string(Position) << "\n";
+		std::cout << "Camera position: " << Position.x << " " << Position.y << " " << Position.z << "\n";
 	prevPos = Position;
 }
 
