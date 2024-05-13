@@ -58,18 +58,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Lamp.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="Lamp.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="PhongLight.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="PhongLight.vs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="ShadowMapping.fs">
       <Filter>Resource Files</Filter>
     </None>
@@ -82,13 +70,7 @@
     <None Include="ShadowMappingDepth.vs">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="model.vs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="skybox.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="model.fs">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="skybox.fs">

@@ -16,8 +16,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void processInput(GLFWwindow* window);
-unsigned int LoadTexture(const char* path);
 unsigned int LoadCubemap(std::vector<std::string> faces);
+void RenderScene(Shader& shader, Model& driverWagon, Model& terrain, Model& brasov, Model& bucharest);
 glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, float& degreesZ);
 void Menu();
 
@@ -44,9 +44,6 @@ enum LightAction
 	SUNRISE,
 	SUNSET
 };
-float ambientStrength = 0.1f;
-float specularStrength = 0.5f;
-float diffuseStrength = 0.5f;
 
 //camera type
 enum class CameraType
@@ -56,6 +53,13 @@ enum class CameraType
 	DRIVER
 };
 CameraType cameraType = CameraType::FREE;
+
+// Original position and rotation of the train in 'bucuresti'
+glm::vec3 trainPosition(1580.0f, -242.0f, -1724.0f);
+glm::vec3 trainRotation(0.0f, 309.0f, 0.0f);
+
+glm::vec3 prevPosition(0.0f, 0.0f, 0.0f);
+glm::vec3 prevRotation(0.0f, 0.0f, 0.0f);
 
 /*
 TODO:
@@ -155,25 +159,13 @@ int main()
 		1.0f, -1.0f, 1.0f
 	};
 	std::cout << "Create skybox\n";
-	glm::vec3 lightPos(840.28f, 989.16f, 1132.70f);
 
 	// build and compile shaders
 	// -------------------------
 	Shader skyboxShader("skybox.vs", "skybox.fs");
 
-	Shader trainShader("model.vs", "model.fs");
-	Shader terrainShader("model.vs", "model.fs");
-
-	Shader bucurestiMapShader("model.vs", "model.fs");
-	Shader ploiestiMapShader("model.vs", "model.fs");
-	Shader bucegiShader("model.vs", "model.fs");
-	Shader brasovShader("model.vs", "model.fs");
-
-	Shader lightingShader("PhongLight.vs", "PhongLight.fs");
-	Shader lightCubeShader("Lamp.vs", "Lamp.fs");
-
-	Shader shadowShader("ShadowMapping.vs", "ShadowMapping.fs");
-	Shader simpleDepthShader("ShadowMappingDepth.vs", "ShadowMappingDepth.fs");
+	Shader shadowMappingShader("ShadowMapping.vs", "ShadowMapping.fs");
+	Shader shadowMappingDepthShader("ShadowMappingDepth.vs", "ShadowMappingDepth.fs");
 
 	// skybox VAO
 	unsigned int skyboxVAO, skyboxVBO;
@@ -206,10 +198,10 @@ int main()
 	unsigned int depthMap;
 	glGenTextures(1, &depthMap);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
-		nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -223,9 +215,9 @@ int main()
 
 	// shader configuration
 	// --------------------
-	shadowShader.Use();
-	shadowShader.SetInt("diffuseTexture", 0);
-	shadowShader.SetInt("shadowMap", 1);
+	shadowMappingShader.Use();
+	shadowMappingShader.SetInt("diffuseTexture", 0);
+	shadowMappingShader.SetInt("shadowMap", 1);
 
 	std::vector<std::string> daySkybox
 	{
@@ -251,23 +243,15 @@ int main()
 	skyboxShader.Use();
 	skyboxShader.SetInt("skybox", 0);
 
-	// Original position and rotation of the train in 'bucuresti'
-	glm::vec3 trainPosition(1580.0f, -242.0f, -1724.0f);
-	glm::vec3 trainRotation(0.0f, 309.0f, 0.0f);
-
-	glm::vec3 prevPosition(0.0f, 0.0f, 0.0f);
-	glm::vec3 prevRotation(0.0f, 0.0f, 0.0f);
-
-	unsigned int lightCubeVAO;
-	glGenVertexArrays(1, &lightCubeVAO);
-	glBindVertexArray(lightCubeVAO);
+	// lighting info
+	glm::vec3 lightPos(-987.766f, 1075.97f, 1217.16f);
+	float ambientStrength = 0.1f;
+	float specularStrength = 0.5f;
+	float diffuseStrength = 0.5f;
 
 	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void*>(nullptr));
 	glEnableVertexAttribArray(0);
-
-	//shadows
-	glGenFramebuffers(1, &depthMapFBO);
 
 	// render loop
 	// -----------
@@ -283,104 +267,65 @@ int main()
 		// -----
 		processInput(window);
 
-		lightingShader.Use();
-		lightingShader.SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		lightingShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
-		lightingShader.SetVec3("lightPos", lightPos);
-		lightingShader.SetVec3("viewPos", camera.Position);
-		lightingShader.SetFloat("ambientStrength", ambientStrength);
-		lightingShader.SetFloat("specularStrength", specularStrength);
-		lightingShader.SetFloat("diffuseStrength", diffuseStrength);
-
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
 			static_cast<float>(SCR_WIDTH) / static_cast<float>(SCR_HEIGHT), 0.1f,
 			3000.0f);
 		glm::mat4 view = camera.GetViewMatrix();
-		lightingShader.SetMat4("projection", projection);
-		lightingShader.SetMat4("view", view);
-
-		// world transformation
-		auto model = glm::mat4(1.0f);
-		lightingShader.SetMat4("model", model);
-
-		// also draw the lamp object
-		lightCubeShader.Use();
-		lightCubeShader.SetMat4("projection", projection);
-		lightCubeShader.SetMat4("view", view);
-		model = glm::mat4(1.0f);
-		model = translate(model, lightPos);
-		model = scale(model, glm::vec3(10.0f));
-		lightCubeShader.SetMat4("model", model);
-
-		glBindVertexArray(lightCubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// render
 		// ------
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// draw scene as normal
-		bucurestiMapShader.Use();
-		trainShader.Use();
-		terrainShader.Use();
+		// 1. render depth of scene to texture (from light's perspective)
+		// --------------------------------------------------------------
+		glm::mat4 lightProjection, lightView;
+		glm::mat4 lightSpaceMatrix;
+		float near_plane = 1.0f, far_plane = 7.5f;
+		lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+		lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+		lightSpaceMatrix = lightProjection * lightView;
 
-		trainShader.SetMat4("projection", projection);
-		trainShader.SetMat4("view", view);
-		terrainShader.SetMat4("projection", projection);
-		terrainShader.SetMat4("view", view);
-		bucurestiMapShader.SetMat4("projection", projection);
-		bucurestiMapShader.SetMat4("view", view);
+		// render scene from light's point of view
+		shadowMappingDepthShader.Use();
+		shadowMappingDepthShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-		// render the loaded model
-		auto train = glm::mat4(1.0f);
-		auto _terrain = glm::mat4(1.0f);
-		auto _bucuresti = glm::mat4(1.0f);
-		auto _brasov = glm::mat4(1.0f);
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		RenderScene(shadowMappingShader, driverWagon, terrain, brasov, bucuresti);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		train = (isMoving ? translate(train, MoveTrain(trainPosition, trainRotation.x, trainRotation.y, trainRotation.z)) : translate(train, trainPosition));
+		// reset viewport
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		train = scale(train, glm::vec3(15.0f, 12.0f, 20.0f));
-		train = glm::rotate(train, glm::radians(trainRotation.x), glm::vec3(1, 0, 0));
-		train = glm::rotate(train, glm::radians(trainRotation.y), glm::vec3(0, 1, 0));
-		train = glm::rotate(train, glm::radians(trainRotation.z), glm::vec3(0, 0, 1));
-		trainShader.SetMat4("model", train);
-		driverWagon.Draw(trainShader);
-
-		// terrain
-		_terrain = translate(_terrain, glm::vec3(-80.0f, -350.0f, 1000.0f));
-		_terrain = scale(_terrain, glm::vec3(250.0f, 250.0f, 250.0f));
-		terrainShader.SetMat4("model", _terrain);
-		terrain.Draw(terrainShader);
-
-		// bucuresti
-		_bucuresti = translate(_bucuresti, glm::vec3(800.0f, -300.0f, -930.0f));
-		_bucuresti = scale(_bucuresti, glm::vec3(150.0f, 150.0f, 150.0f));
-		bucurestiMapShader.SetMat4("model", _bucuresti);
-		bucuresti.Draw(bucurestiMapShader);
-
-		// brasov
-		_brasov = translate(_brasov, glm::vec3(-3550.0f, -210.0f, -350.0f));
-		_brasov = scale(_brasov, glm::vec3(50.0f, 50.0f, 50.0f));
-		_brasov = glm::rotate(_brasov, glm::radians(-75.0f), glm::vec3(0, 1, 0));
-		brasovShader.SetMat4("model", _brasov);
-		brasov.Draw(brasovShader);
+		// 2. render scene as normal using the generated depth/shadow map
+		// --------------------------------------------------------------
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		shadowMappingShader.Use();
+		shadowMappingShader.SetMat4("projection", projection);
+		shadowMappingShader.SetMat4("view", view);
+		// set light uniforms
+		shadowMappingShader.SetVec3("viewPos", camera.Position);
+		shadowMappingShader.SetVec3("lightPos", lightPos);
+		shadowMappingShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
+		shadowMappingShader.SetFloat("ambientStrength", ambientStrength);
+		shadowMappingShader.SetFloat("specularStrength", specularStrength);
+		shadowMappingShader.SetFloat("diffuseStrength", diffuseStrength);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		RenderScene(shadowMappingShader, driverWagon, terrain, brasov, bucuresti);
 
 
 		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) // day
 		{
 			cubemapTexture = LoadCubemap(daySkybox);
-			ambientStrength = 0.1f;
-			specularStrength = 0.5f;
-			diffuseStrength = 0.5f;
 		}
 		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) // night
 		{
 			cubemapTexture = LoadCubemap(sunsetSkybox);
-			ambientStrength = 0.5f;
-			specularStrength = 0.1f;
-			diffuseStrength = 0.1f;
 		}
 		// Debugging keys for train position and rotation
 		if (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS)
@@ -450,6 +395,35 @@ int main()
 		{
 			trainPosition = { 1580.0f, -242.0f, -1724.0f };
 			trainRotation = { 0.0f, 309.0f, 0.0f };
+		}
+		// DEBUGGING PURPOSES
+		if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+		{
+			specularStrength += 0.1f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+		{
+			specularStrength -= 0.1f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+		{
+			diffuseStrength += 0.1f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+		{
+			diffuseStrength -= 0.1f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+		{
+			ambientStrength += 0.1f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+		{
+			ambientStrength -= 0.1f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+		{
+			std::cout << "Specular: " << specularStrength << " Diffuse: " << diffuseStrength << " Ambient: " << ambientStrength << std::endl;
 		}
 
 		switch (cameraType)
@@ -583,45 +557,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			speed -= 0.5;
 }
 
-// utility function for loading a 2D texture from file
-// ---------------------------------------------------
-unsigned int LoadTexture(const char* path)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
-	if (data)
-	{
-		GLenum format;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else
-	{
-		std::cout << "Texture failed to load at path: " << path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
-}
-
 // loads a cubemap texture from 6 individual texture faces
 // order:
 // +X (right)
@@ -663,9 +598,46 @@ unsigned int LoadCubemap(std::vector<std::string> faces)
 	return textureID;
 }
 
+void RenderScene(Shader& shader, Model& driverWagon, Model& terrain, Model& brasov, Model& bucharest)
+{
+	// render the loaded model
+	auto train = glm::mat4(1.0f);
+	auto _terrain = glm::mat4(1.0f);
+	auto _bucuresti = glm::mat4(1.0f);
+	auto _brasov = glm::mat4(1.0f);
+
+	train = (isMoving ? translate(train, MoveTrain(trainPosition, trainRotation.x, trainRotation.y, trainRotation.z)) : translate(train, trainPosition));
+
+	train = scale(train, glm::vec3(15.0f, 12.0f, 20.0f));
+	train = glm::rotate(train, glm::radians(trainRotation.x), glm::vec3(1, 0, 0));
+	train = glm::rotate(train, glm::radians(trainRotation.y), glm::vec3(0, 1, 0));
+	train = glm::rotate(train, glm::radians(trainRotation.z), glm::vec3(0, 0, 1));
+	shader.SetMat4("model", train);
+	driverWagon.Draw(shader);
+
+	// terrain
+	_terrain = translate(_terrain, glm::vec3(-80.0f, -350.0f, 1000.0f));
+	_terrain = scale(_terrain, glm::vec3(250.0f, 250.0f, 250.0f));
+	shader.SetMat4("model", _terrain);
+	terrain.Draw(shader);
+
+	// bucuresti
+	_bucuresti = translate(_bucuresti, glm::vec3(800.0f, -300.0f, -930.0f));
+	_bucuresti = scale(_bucuresti, glm::vec3(150.0f, 150.0f, 150.0f));
+	shader.SetMat4("model", _bucuresti);
+	bucharest.Draw(shader);
+
+	// brasov
+	_brasov = translate(_brasov, glm::vec3(-3550.0f, -210.0f, -350.0f));
+	_brasov = scale(_brasov, glm::vec3(50.0f, 50.0f, 50.0f));
+	_brasov = glm::rotate(_brasov, glm::radians(-75.0f), glm::vec3(0, 1, 0));
+	shader.SetMat4("model", _brasov);
+	brasov.Draw(shader);
+}
+
 glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, float& degreesZ)
 {
-	// to be implemented
+	// Needs to be finished
 	if (trainPosition.x > 1236.0f && trainPosition.z < -1398.0f)
 	{
 		trainPosition.x -= 0.4563f * speed;
@@ -721,7 +693,7 @@ glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, 
 	else if (trainPosition.x > -770.0 && trainPosition.z < -285.0)
 	{
 		if (degreesY > 278.5)
-			degreesY -= 1.0f;
+			degreesY -= 0.1f;
 
 		if (trainPosition.y < -155.98)
 			trainPosition.y += 0.4213f * speed;
@@ -731,7 +703,7 @@ glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, 
 	}
 	else if (trainPosition.x > -740.0 && trainPosition.z < -270.0)
 	{
-		if(trainPosition.y < -154.0)
+		if (trainPosition.y < -154.0)
 			trainPosition.y += 0.03f * speed;
 
 		trainPosition.x -= 0.9763f * speed;
