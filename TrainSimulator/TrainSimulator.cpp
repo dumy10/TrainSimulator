@@ -1,4 +1,4 @@
-// TrainSimulator.cpp : Defines the entry point for the console application.
+﻿// TrainSimulator.cpp : Defines the entry point for the console application.
 #include <filesystem>
 #include <vector>
 
@@ -245,9 +245,9 @@ int main()
 
 	// lighting info
 	glm::vec3 lightPos(-987.766f, 1075.97f, 1217.16f);
-	float ambientStrength = 0.1f;
-	float specularStrength = 0.5f;
-	float diffuseStrength = 0.5f;
+	float ambientStrength = 0.7f;
+	float specularStrength = 2.1f;
+	float diffuseStrength = 2.0f;
 
 	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void*>(nullptr));
@@ -327,6 +327,10 @@ int main()
 		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) // night
 		{
 			cubemapTexture = LoadCubemap(sunsetSkybox);
+			specularStrength = 1.0f;
+			diffuseStrength = 1.4f;
+			ambientStrength = 0.2f;
+
 		}
 		// Debugging keys for train position and rotation
 		if (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS)
@@ -638,7 +642,8 @@ void RenderScene(Shader& shader, Model& driverWagon, Model& terrain, Model& bras
 
 glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, float& degreesZ)
 {
-	// Needs to be finished
+	float speed = 5.0f;
+
 	if (trainPosition.x > 1236.0f && trainPosition.z < -1398.0f)
 	{
 		trainPosition.x -= 0.4563f * speed;
@@ -694,7 +699,7 @@ glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, 
 	else if (trainPosition.x > -770.0 && trainPosition.z < -285.0)
 	{
 		if (degreesY > 278.5)
-			degreesY -= 0.1f;
+			degreesY -= 1.0f;
 
 		if (trainPosition.y < -155.98)
 			trainPosition.y += 0.4213f * speed;
@@ -702,14 +707,37 @@ glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, 
 		trainPosition.x -= 0.8563f * speed;
 		trainPosition.z += 0.4523f * speed;
 	}
-	else if (trainPosition.x > -740.0 && trainPosition.z < -270.0)
+	//Position: (-741.945 - 155.634 - 271.788)
+	//Rotation : (0 277.5 0)
+
+//Position: (-742.921 - 155.634 - 271.746)
+//Rotation : (0 277.5 0)
+	else if (trainPosition.x > -741.945f && trainPosition.z < -271.788f)
 	{
-		if (trainPosition.y < -154.0)
-			trainPosition.y += 0.03f * speed;
+		if (degreesY > 277.5f)
+			degreesY -= 1.0f * speed;
 
 		trainPosition.x -= 0.9763f * speed;
 		trainPosition.z += 0.0423f * speed;
 	}
+	else if (trainPosition.x > -1372.84f && trainPosition.z > -271.659f)
+	{
+		trainPosition.x -= 0.8563f * speed;
+		trainPosition.z += 0.4523f * speed;
+
+		if (degreesY > 257.099f)
+			degreesY -= 1.0f * speed;
+	}
+	else if (trainPosition.x > -1568.84f && trainPosition.z > -271.659f)
+	{
+		trainPosition.x -= 0.8563f * speed;
+		trainPosition.z += 0.4523f * speed;
+
+		if (degreesY > 247.598f)
+			degreesY -= 1.0f * speed;
+	}
+	//Position: (-446.123 -155.634 -284.604)
+	//Rotation: (0 278.5 0)
 
 	return glm::vec3(trainPosition.x, trainPosition.y, trainPosition.z);
 }
