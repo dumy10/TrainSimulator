@@ -294,7 +294,7 @@ int main()
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
-		RenderScene(shadowMappingShader, driverWagon, terrain, brasov, bucuresti);
+		RenderScene(shadowMappingDepthShader, driverWagon, terrain, brasov, bucuresti);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// reset viewport
@@ -312,6 +312,7 @@ int main()
 		shadowMappingShader.SetVec3("viewPos", camera.Position);
 		shadowMappingShader.SetVec3("lightPos", lightPos);
 		shadowMappingShader.SetMat4("lightSpaceMatrix", lightSpaceMatrix);
+
 		shadowMappingShader.SetFloat("ambientStrength", ambientStrength);
 		shadowMappingShader.SetFloat("specularStrength", specularStrength);
 		shadowMappingShader.SetFloat("diffuseStrength", diffuseStrength);
@@ -442,7 +443,7 @@ int main()
 				camera.SetViewMatrix(glm::vec3(trainPosition.x - 387.375, trainPosition.y + 85.716, trainPosition.z + 390.92));
 			else if (trainRotation.y >= 297.5 && trainRotation.y < 300.0)
 				camera.SetViewMatrix(glm::vec3(trainPosition.x - 422.915, trainPosition.y + 86.674, trainPosition.z + 335.327));
-			else if (trainRotation.y >= 278.5 && trainRotation.y <= 297)
+			else if (trainRotation.y > 278 && trainRotation.y <= 297)
 				camera.SetViewMatrix(glm::vec3(trainPosition.x - 476.603, trainPosition.y + 83.788, trainPosition.z + 136.058));
 			break;
 		default:;
