@@ -1,4 +1,4 @@
-# Blender MTL File: 'terrain.blend'
+# Blender MTL File: 'terrain2.blend'
 # Material Count: 100
 
 newmtl BuildingMat-00000
@@ -1013,7 +1013,7 @@ d 1.000000
 illum 1
 map_Kd textures\\texture4-00091-texture.png
 
-newmtl Material.001
+newmtl Material.012
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -1027,7 +1027,7 @@ map_Kd textures\\DefaultMaterial_BaseColor.png
 map_Ns textures\\DefaultMaterial_Roughness.png
 refl textures\\DefaultMaterial_Metallic.png
 
-newmtl Material.002
+newmtl Material.015
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -1041,7 +1041,7 @@ map_Kd textures\\DefaultMaterial_BaseColor.png
 map_Ns textures\\DefaultMaterial_Roughness.png
 refl textures\\DefaultMaterial_Metallic.png
 
-newmtl Material.003
+newmtl Material.016
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -1055,7 +1055,7 @@ map_Kd textures\\DefaultMaterial_BaseColor.png
 map_Ns textures\\DefaultMaterial_Roughness.png
 refl textures\\DefaultMaterial_Metallic.png
 
-newmtl Material.004
+newmtl Material.017
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -1069,7 +1069,7 @@ map_Kd textures\\DefaultMaterial_BaseColor.png
 map_Ns textures\\DefaultMaterial_Roughness.png
 refl textures\\DefaultMaterial_Metallic.png
 
-newmtl Material.005
+newmtl Material.018
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -1083,7 +1083,7 @@ map_Kd textures\\DefaultMaterial_BaseColor.png
 map_Ns textures\\DefaultMaterial_Roughness.png
 refl textures\\DefaultMaterial_Metallic.png
 
-newmtl Material.006
+newmtl Material.019
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -1097,7 +1097,7 @@ map_Kd textures\\DefaultMaterial_BaseColor.png
 map_Ns textures\\DefaultMaterial_Roughness.png
 refl textures\\DefaultMaterial_Metallic.png
 
-newmtl Material.008
+newmtl Material.020
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
@@ -1111,7 +1111,7 @@ map_Kd textures\\DefaultMaterial_BaseColor.png
 map_Ns textures\\DefaultMaterial_Roughness.png
 refl textures\\DefaultMaterial_Metallic.png
 
-newmtl Material.009
+newmtl Material.021
 Ns 225.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
