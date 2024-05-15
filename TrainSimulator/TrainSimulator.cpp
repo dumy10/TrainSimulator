@@ -5,6 +5,8 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "Model.h"
+#include "LightAction.h"
+#include "CameraType.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -38,20 +40,6 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-//light
-enum LightAction
-{
-	SUNRISE,
-	SUNSET
-};
-
-//camera type
-enum class CameraType
-{
-	FREE,
-	THIRDPERSON,
-	DRIVER
-};
 CameraType cameraType = CameraType::FREE;
 
 // Original position and rotation of the train in 'bucuresti'
@@ -63,9 +51,10 @@ glm::vec3 prevRotation(0.0f, 0.0f, 0.0f);
 
 /*
 TODO:
-- Implement the MoveTrain function
+- Finish the MoveTrain function
 - Adjust the camera view according to the camera type after adding the train model and while moving the train
-- Check the lighting and the shadows in the scene and adjust them accordingly (for the moment the shadows and the lighting are not visible)
+- Rotate the lighting around the scene
+- Check the rails (scale them down)
 */
 int main()
 {
@@ -323,6 +312,9 @@ int main()
 		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) // day
 		{
 			cubemapTexture = LoadCubemap(daySkybox);
+			ambientStrength = 0.7f;
+			specularStrength = 2.1f;
+			diffuseStrength = 2.0f;
 		}
 		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) // night
 		{
@@ -330,7 +322,6 @@ int main()
 			specularStrength = 1.0f;
 			diffuseStrength = 1.4f;
 			ambientStrength = 0.2f;
-
 		}
 		// Debugging keys for train position and rotation
 		if (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS)
@@ -400,35 +391,6 @@ int main()
 		{
 			trainPosition = { 1580.0f, -242.0f, -1724.0f };
 			trainRotation = { 0.0f, 309.0f, 0.0f };
-		}
-		// DEBUGGING PURPOSES
-		if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
-		{
-			specularStrength += 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
-		{
-			specularStrength -= 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
-		{
-			diffuseStrength += 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-		{
-			diffuseStrength -= 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-		{
-			ambientStrength += 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
-		{
-			ambientStrength -= 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-		{
-			std::cout << "Specular: " << specularStrength << " Diffuse: " << diffuseStrength << " Ambient: " << ambientStrength << std::endl;
 		}
 
 		switch (cameraType)
