@@ -307,7 +307,6 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, depthMap);
 		RenderScene(shadowMappingShader, driverWagon, terrain, brasov, bucuresti);
 
-
 		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS) // day
 		{
 			cubemapTexture = LoadCubemap(daySkybox);
@@ -512,7 +511,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) // stop train
 		isMoving = false;
 	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) // increase speed
-		if (speed <= 5.5)
+		if (speed <= 9.5)
 			speed += 0.5;
 	if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) // decrease speed
 		if (speed > 1.5)
@@ -597,15 +596,324 @@ void RenderScene(Shader& shader, Model& driverWagon, Model& terrain, Model& bras
 	brasov.Draw(shader);
 }
 
-glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, float& degreesZ)
-{
-	// TODO: Implement the train movement
-	if (trainPosition.x > 1118.5 && trainPosition.z < -1218.0)
+glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, float& degreesZ) {
+	if (trainPosition.x > 1032.92f && trainPosition.z < -1084.51f) {
+		trainPosition.x -= 0.5f * speed;
+		trainPosition.z += 0.5f * speed;
+	}
+	else if (trainPosition.x > 1061.01f && trainPosition.z < -1170.01f) {
+		if (trainPosition.y < -180.5f)
+			trainPosition.y += 0.1f * speed;
+		if (degreesY > 308.0f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z += 0.89f * speed;
+	}
+	else if (trainPosition.x > 903.919f && trainPosition.z < -1010.01f) {
+		if (degreesY > 305.0f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z += 0.65f * speed;
+	}
+	else if (trainPosition.x > 794.919f && trainPosition.z < -916.012f) {
+		if (trainPosition.y < -180.5f)
+			trainPosition.y += 0.1f * speed;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.4f * speed;
+	}
+	else if (trainPosition.x > 697.419f && trainPosition.z < -859.512f) {
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.3f * speed;
+	}
+	else if (trainPosition.x > 658.919f && trainPosition.z < -843.012f) {
+		if (degreesY > 302.1f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.52f * speed;
+		trainPosition.z += 0.3f * speed;
+	}
+	else if (trainPosition.x > 603.919f && trainPosition.z < -819.512f) {
+		trainPosition.x -= 0.53f * speed;
+		trainPosition.z += 0.3f * speed;
+	}
+	else if (trainPosition.x > 536.919f && trainPosition.z < -766.012f) {
+		if (trainPosition.y < -170.5f)
+			trainPosition.y += 0.1f * speed;
+		trainPosition.x -= 0.5f * speed;
+		trainPosition.z += 0.4f * speed;
+	}
+	else if (trainPosition.x > 468.919f && trainPosition.z < -716.512f) {
+		if (degreesY > 295.4f)
+			degreesY -= 0.5f;
+		if (trainPosition.y < -162.5f)
+			trainPosition.y += 0.1f * speed;
+		trainPosition.x -= 0.61f * speed;
+		trainPosition.z += 0.59f * speed;
+	}
+	else if (trainPosition.x > 319.419f && trainPosition.z < -647.012f) {
+		if (trainPosition.y < -160.0f)
+			trainPosition.y += 0.1f * speed;
+		trainPosition.x -= 0.5f * speed;
+		trainPosition.z += 0.3f * speed;
+	}
+	else if (trainPosition.x > 247.419f && trainPosition.z < -600.012f) {
+		trainPosition.x -= 0.4f * speed;
+		trainPosition.z += 0.4f * speed;
+	}
+	else if (trainPosition.x > 110.919f && trainPosition.z < -543.512f) {
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.4f * speed;
+	}
+	else if (trainPosition.x > 6.41943f && trainPosition.z < -508.012f) {
+		if (degreesY > 300.4f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.5f * speed;
+		trainPosition.z += 0.3f * speed;
+	}
+	else if (trainPosition.x > -107.081f && trainPosition.z < -455.512f) {
+		if (degreesY > 298.2f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.5f * speed;
+		trainPosition.z += 0.25f * speed;
+	}
+	else if (trainPosition.x > -138.081f && trainPosition.z < -444.012f) {
+		if (degreesY > 295.1f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.5f * speed;
+		trainPosition.z += 0.3f * speed;
+	}
+	else if (trainPosition.x > -153.081f && trainPosition.z < -434.012f) {
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.4f * speed;
+	}
+	else if (trainPosition.x > -150.476)
 	{
-		trainPosition.x -= 0.05f * speed;
-		trainPosition.z += 0.05f * speed;
+		trainPosition.x -= 0.5f * speed;
+	}
+	else if (trainPosition.x > -193.058f && trainPosition.z < -439.204f) {
+		if (degreesY > 292.7f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.65f * speed;
+	}
+	else if (trainPosition.x > -299.95f && trainPosition.z < -393.248f) {
+		if (degreesY > 288.0f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.58f * speed;
+	}
+	else if (trainPosition.x > -326.45f && trainPosition.z < -372.248f) {
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z += 0.55f * speed;
+	}
+	else if (trainPosition.x > -365.45f && trainPosition.z < -372.248f) {
+		if (degreesY > 283.799f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.55f * speed;
+	}
+	else if (trainPosition.x > -427.45f && trainPosition.z < -340.248f) {
+		if (degreesY > 279.899f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.65f * speed;
+		trainPosition.z += 0.5f * speed;
+	}
+	else if (trainPosition.x > -484.95f && trainPosition.z < -329.748f) {
+		if (degreesY > 274.599f)
+			degreesY -= 0.5f;
+		if (trainPosition.y > -160.9f)
+			trainPosition.y -= 0.1f * speed;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.6f * speed;
+	}
+	else if (trainPosition.x > -541.45f && trainPosition.z < -298.248f) {
+		if (degreesY > 272.599f)
+			degreesY -= 0.5f;
+		if (trainPosition.y > -165.9f)
+			trainPosition.y -= 0.1f * speed;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.5f * speed;
+	}
+	else if (trainPosition.x > -609.95f && trainPosition.z < -294.748f) {
+		if (degreesY > 269.898f)
+			degreesY -= 0.5f;
+		if (trainPosition.y > -168.5f)
+			trainPosition.y -= 0.1f * speed;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.35 * speed;
+	}
+	else if (trainPosition.x > -645.95f && trainPosition.z < -294.748f) {
+		if (degreesY > 268.598f)
+			degreesY -= 0.3f;
+		trainPosition.x -= 0.6f * speed;
+	}
+	else if (trainPosition.x > -707.45f && trainPosition.z < -290.748f) {
+		if (degreesY > 266.198f)
+			degreesY -= 0.3f;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.4f * speed;
+	}
+	else if (trainPosition.x > -744.95f && trainPosition.z < -288.248f) {
+		if (degreesY > 264.198f)
+			degreesY -= 0.3f;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.3f * speed;
+	}
+	else if (trainPosition.x > -825.95f && trainPosition.z < -286.748f) {
+		if (degreesY > 262.798f)
+			degreesY -= 0.3f;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.2f * speed;
+	}
+	else if (trainPosition.x > -877.95f && trainPosition.z < -284.748f) {
+		if (degreesY > 261.998f)
+			degreesY -= 0.3f;
+		if (trainPosition.y > -183.5f)
+			trainPosition.y -= 0.1f * speed;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z += 0.29f * speed;
+	}
+	else if (trainPosition.x > -1025.95f && trainPosition.z > -313.748f) {
+		if (degreesY > 259.998f)
+			degreesY -= 0.3f;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z -= 0.29f * speed;
+	}
+	else if (trainPosition.x > -1252.95f && trainPosition.z > -362.748f) {
+		trainPosition.x -= 0.69f * speed;
+		trainPosition.z -= 0.15f * speed;
+	}
+	else if (trainPosition.x > -1375.45f && trainPosition.z > -388.248f) {
+		if (degreesY > 255.498f)
+			degreesY -= 0.3f;
+		trainPosition.x -= 0.657 * speed;
+		trainPosition.z -= 0.08f * speed;
+	}
+	else if (trainPosition.x > -1494.45f && trainPosition.z > -413.248) {
+		if (degreesY > 252.797f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.987f * speed;
+		trainPosition.z -= 0.201f * speed;
+	}
+	else if (trainPosition.x > -1666.77f && trainPosition.z > -469.355f)
+	{
+		if (degreesY > 252.401f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z -= 0.25f * speed;
+	}
+	else if (trainPosition.x > -1778.27f && trainPosition.z > -507.355f)
+	{
+		if (degreesY > 249.7f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z -= 0.22f * speed;
+	}
+	else if (trainPosition.x > -1913.27f && trainPosition.z > -545.855f)
+	{
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z -= 0.27f * speed;
+	}
+	else if (trainPosition.x > -1991.77f && trainPosition.z > -581.855f)
+	{
+		if (degreesY > 247.9f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z -= 0.20f * speed;
+	}
+	else if (trainPosition.x > -2101.77f && trainPosition.z > -614.355f)
+	{
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z -= 0.21f * speed;
 	}
 
+	else if (trainPosition.x > -2160.71f && trainPosition.z > -651.319f)
+	{
+		if (trainPosition.y > -188.5f)
+			trainPosition.y -= 0.3f * speed;
+		if (degreesY > 251.901f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.5f * speed;
+		trainPosition.z -= 0.3f * speed;
+	}
+	else if (trainPosition.x > -2187.71f && trainPosition.z > -655.319f)
+	{
+		if (trainPosition.y > -192.5f)
+			trainPosition.y -= 0.3f * speed;
+		if (degreesY > 253.001f)
+			degreesY -= 0.5f;
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z -= 0.4f * speed;
+	}
+
+	else if (trainPosition.x > -2242.21f && trainPosition.z > -681.319f)
+	{
+		if (degreesY < 257.602f)
+			degreesY += 0.5f;
+		trainPosition.x -= 0.8f * speed;
+		trainPosition.z -= 0.5f * speed;
+	}
+	else if (trainPosition.x > -2273.71f && trainPosition.z > -704.819f)
+	{
+		if (trainPosition.y > -204.5)
+			trainPosition.y -= 0.3f * speed;
+		if (degreesY < 261.602f)
+			degreesY += 0.5f;
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z -= 0.4f * speed;
+	}
+	else if (trainPosition.x > -2340.71f && trainPosition.z > -747.319f)
+	{
+		if (trainPosition.y > -205.5)
+			trainPosition.y -= 0.3f * speed;
+		if (degreesY < 263.002f)
+			degreesY += 0.5f;
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z -= 0.10f * speed;
+	}
+	else if (trainPosition.x > -2420.71f && trainPosition.z > -757.819f)
+	{
+		if (trainPosition.y > -224.5)
+			trainPosition.y -= 0.3f * speed;
+		if (degreesY < 268.602f)
+			degreesY += 0.5f;
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z -= 0.08f * speed;
+	}
+	else if (trainPosition.x > -2466.71 && trainPosition.z > -760.819)
+	{
+		if (trainPosition.y > -231.5)
+			trainPosition.y -= 0.3f * speed;
+		if (degreesY < 270.803f)
+			degreesY += 0.5f;
+		trainPosition.x -= 0.7f * speed;
+		trainPosition.z -= 0.10f * speed;
+	}
+	else if (trainPosition.x > -2506.71 && trainPosition.z > -765.319)
+	{
+		if (trainPosition.y > -235.5)
+			trainPosition.y -= 0.3f * speed;
+		trainPosition.x -= 0.6f * speed;
+		trainPosition.z -= 0.4f * speed;
+	}
+	else if (trainPosition.x > -2712.21 && trainPosition.z < -730.819)
+	{
+		if (degreesY < 270.803f)
+			degreesY += 0.5f;
+		if (trainPosition.y > -236.5)
+			trainPosition.y -= 0.3f * speed;
+		trainPosition.x -= 0.9f * speed;
+		trainPosition.z += 0.08f * speed;
+	}
+	else if (trainPosition.x > -2902.21 && trainPosition.z < -727.319)
+	{
+		trainPosition.x -= 0.999f * speed;
+		trainPosition.z += 0.08f * speed;
+	}
+	else if (trainPosition.x > -2934.71 && trainPosition.z < -724.319)
+	{
+		trainPosition.x -= 0.999f * speed;
+		trainPosition.z += 0.065f * speed;
+	}
+	
 	return glm::vec3(trainPosition.x, trainPosition.y, trainPosition.z);
 }
 
