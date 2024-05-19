@@ -49,12 +49,6 @@ glm::vec3 trainRotation(0.0f, 315.3f, 0.0f);
 glm::vec3 prevPosition(0.0f, 0.0f, 0.0f);
 glm::vec3 prevRotation(0.0f, 0.0f, 0.0f);
 
-/*
-TODO:
-- Finish the MoveTrain function
-- Adjust the camera view according to the camera type after adding the train model and while moving the train
-- Rotate the lighting around the scene - maybe
-*/
 int main()
 {
 	Menu();
@@ -321,79 +315,6 @@ int main()
 			diffuseStrength = 1.4f;
 			ambientStrength = 0.2f;
 		}
-		// Debugging keys for train position and rotation
-		if (glfwGetKey(window, GLFW_KEY_KP_1) == GLFW_PRESS)
-		{
-			trainPosition.x += 0.5f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS)
-		{
-			trainPosition.x -= 0.5f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_3) == GLFW_PRESS)
-		{
-			trainPosition.z += 0.5f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
-		{
-			trainPosition.z -= 0.5f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
-		{
-			trainPosition.y += 0.5f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
-		{
-			trainPosition.y -= 0.5f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_7) == GLFW_PRESS)
-		{
-			trainRotation.y += 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
-		{
-			trainRotation.y -= 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
-		{
-			trainRotation.z += 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_DIVIDE) == GLFW_PRESS)
-		{
-			trainRotation.z -= 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_MULTIPLY) == GLFW_PRESS)
-		{
-			trainRotation.x += 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS)
-		{
-			trainRotation.x -= 0.1f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS)
-		{
-			trainPosition = prevPosition;
-			trainRotation = prevRotation;
-		}
-		if (glfwGetKey(window, GLFW_KEY_KP_0) == GLFW_PRESS)
-		{
-			if (prevPosition != trainPosition)
-				std::cout << "Position: (" << trainPosition.x << " " << trainPosition.y << " " << trainPosition.z << ")" << std::endl;
-			prevPosition = trainPosition;
-
-			if (prevRotation != trainRotation)
-				std::cout << "Rotation: (" << trainRotation.x << " " << trainRotation.y << " " << trainRotation.z << ")" << std::endl;
-			prevRotation = trainRotation;
-		}
-		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-		{
-			trainPosition = { 1373.0f, -231.5f, -1482.0f };
-			trainRotation = { 0.0f, 315.3f, 0.0f };
-		}
-		if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-		{
-			camera.SetViewMatrix(lightPos);
-		}
 
 		switch (cameraType)
 		{
@@ -404,7 +325,50 @@ int main()
 			break;
 		case CameraType::DRIVER:
 			if (trainRotation.y == 315.3f)
-				camera.SetViewMatrix(glm::vec3(trainPosition.x - 214.65, trainPosition.y + 67.816, trainPosition.z + 242.25));
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 214.65f, trainPosition.y + 67.816f, trainPosition.z + 242.25f));
+			else if (trainRotation.y > 304.5f && trainRotation.y < 305.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 252.007f, trainPosition.y + 60.304f, trainPosition.z + 196.588f));
+			else if (trainRotation.y > 301.5f && trainRotation.y < 302.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 263.708, trainPosition.y + 71.482f, trainPosition.z + 181.847f));
+			else if (trainRotation.y > 295.0f && trainRotation.y < 296.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 287.367f, trainPosition.y + 70.428f, trainPosition.z + 148.222f));
+			else if (trainRotation.y > 294.5f && trainRotation.y < 295.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 294.6749, trainPosition.y + 69.428f, trainPosition.z + 151.084));
+			else if (trainRotation.y > 287.5f && trainRotation.y < 288.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 303.012f, trainPosition.y + 72.3578f, trainPosition.z + 120.723f));
+			else if (trainRotation.y > 279.5f && trainRotation.y < 280.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 314.121f, trainPosition.y + 72.9759f, trainPosition.z + 71.957f));
+			else if (trainRotation.y > 274.0f && trainRotation.y < 275.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 318.02f, trainPosition.y + 72.9759f, trainPosition.z + 42.362f));
+			else if (trainRotation.y > 272.0f && trainRotation.y < 273.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 319.234f, trainPosition.y + 72.9759f, trainPosition.z + 34.315f));
+			else if (trainRotation.y > 269.0f && trainRotation.y < 270.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 325.334f, trainPosition.y + 72.9759f, trainPosition.z - 2.1813f));
+			else if (trainRotation.y > 263.0f && trainRotation.y < 265.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 332.735f, trainPosition.y + 70.4831f, trainPosition.z - 13.1938f));
+			else if (trainRotation.y > 261.5f && trainRotation.y < 262.8f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 328.09f, trainPosition.y + 71.1831f, trainPosition.z - 30.4746f));
+			else if (trainRotation.y > 259.5f && trainRotation.y < 260.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 319.723f, trainPosition.y + 74.9258f, trainPosition.z - 39.3813f));
+			else if (trainRotation.y > 255.0f && trainRotation.y < 256.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 314.439f, trainPosition.y + 75.757f, trainPosition.z - 67.524f));
+			else if (trainRotation.y > 252.0f && trainRotation.y < 253.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 312.557f, trainPosition.y + 64.6057f, trainPosition.z - 81.3223f));
+			else if (trainRotation.y > 249.0f && trainRotation.y < 250.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 315.634f, trainPosition.y + 64.7594f, trainPosition.z - 101.576f));
+			else if (trainRotation.y > 247.0f && trainRotation.y < 248.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 304.35f, trainPosition.y + 71.836f, trainPosition.z - 109.488f));
+			else if (trainRotation.y > 257.5f && trainRotation.y < 260.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 322.22f, trainPosition.y + 70.9501f, trainPosition.z - 56.2729f));
+			else if (trainRotation.y > 268.5f && trainRotation.y < 269.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 319.1f, trainPosition.y + 69.8779f, trainPosition.z - 5.87732f));
+			else if (trainRotation.y > 270.5f && trainRotation.y < 270.8f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 319.13f, trainPosition.y + 74.1785f, trainPosition.z - 22.6402f));
+			else if (trainRotation.y > 270.8f && trainRotation.y < 271.0f)
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 326.26f, trainPosition.y + 66.0428f, trainPosition.z - 13.5864f));
+			else
+				camera.SetViewMatrix(glm::vec3(trainPosition.x - 189.463f, trainPosition.y + 63.3484f, trainPosition.z - 8.42737f));
+
 			break;
 		default:;
 		}
@@ -511,10 +475,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) // stop train
 		isMoving = false;
 	if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) // increase speed
-		if (speed <= 9.5)
+		if (speed <= 4.5)
 			speed += 0.5;
 	if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) // decrease speed
-		if (speed > 1.5)
+		if (speed >= 1.5)
 			speed -= 0.5;
 }
 
@@ -824,7 +788,6 @@ glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, 
 		trainPosition.x -= 0.7f * speed;
 		trainPosition.z -= 0.21f * speed;
 	}
-
 	else if (trainPosition.x > -2160.71f && trainPosition.z > -651.319f)
 	{
 		if (trainPosition.y > -188.5f)
@@ -843,7 +806,6 @@ glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, 
 		trainPosition.x -= 0.7f * speed;
 		trainPosition.z -= 0.4f * speed;
 	}
-
 	else if (trainPosition.x > -2242.21f && trainPosition.z > -681.319f)
 	{
 		if (degreesY < 257.602f)
@@ -913,7 +875,7 @@ glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, 
 		trainPosition.x -= 0.999f * speed;
 		trainPosition.z += 0.065f * speed;
 	}
-	
+
 	return glm::vec3(trainPosition.x, trainPosition.y, trainPosition.z);
 }
 
