@@ -49,6 +49,27 @@ glm::vec3 trainRotation(0.0f, 315.3f, 0.0f);
 glm::vec3 prevPosition(0.0f, 0.0f, 0.0f);
 glm::vec3 prevRotation(0.0f, 0.0f, 0.0f);
 
+glm::vec3 lightPos(-987.766f, 1075.97f, 1217.16f);
+
+float rotationAngleInDegrees = 0.0f;
+float rotationSpeed = 0.1f;
+
+glm::vec3 rotationAxis(0.0f, 1.0f, 0.0f);
+
+glm::mat4 calculateRotationMatrix(float angleInRadians, const glm::vec3& axis)
+{
+	return glm::rotate(glm::mat4(1.0f), angleInRadians, axis);
+}
+
+void updateRotationAngle()
+{
+	rotationAngleInDegrees += rotationSpeed;
+	if (rotationAngleInDegrees >= 360.0f)
+	{
+		rotationAngleInDegrees -= 360.0f;
+	}
+}
+
 int main()
 {
 	Menu();
@@ -226,7 +247,8 @@ int main()
 	skyboxShader.SetInt("skybox", 0);
 
 	// lighting info
-	glm::vec3 lightPos(-987.766f, 1075.97f, 1217.16f);
+	
+	// -779.145 2466.52 - 90.1038
 	float ambientStrength = 0.7f;
 	float specularStrength = 2.1f;
 	float diffuseStrength = 2.0f;
@@ -265,8 +287,13 @@ int main()
 		glm::mat4 lightProjection, lightView;
 		glm::mat4 lightSpaceMatrix;
 		float near_plane = 1.0f, far_plane = 7.5f;
+
+		glm::mat4 lightRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotationAngleInDegrees), rotationAxis);
+		glm::vec4 rotatedLightPos = lightRotationMatrix * glm::vec4(lightPos, 1.0f);
+		glm::vec3 finalLightPos = glm::vec3(rotatedLightPos);
+		lightView = glm::lookAt(finalLightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+
 		lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-		lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 		lightSpaceMatrix = lightProjection * lightView;
 
 		// render scene from light's point of view
