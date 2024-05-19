@@ -43,8 +43,7 @@ bool firstMouse = true;
 
 // Sound Engine
 irr::ISoundEngine* soundEngine = irr::createIrrKlangDevice();
-
-
+float volume = 1.0f;
 
 // timing
 float deltaTime = 0.0f;
@@ -89,8 +88,6 @@ int main()
 		std::cout << "Error: Could not initialize sound engine" << std::endl;
 		return 1;
 	}
-
-	soundEngine->setSoundVolume(0.5f);
 
 	// glfw: initialize and configure
 	// ------------------------------
@@ -289,6 +286,7 @@ int main()
 		// -----
 		processInput(window);
 		PlaySounds();
+		soundEngine->setSoundVolume(volume);
 
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
@@ -534,6 +532,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) // decrease speed
 		if (speed >= 1.5)
 			speed -= 0.5;
+	if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) // increase volume
+		if (volume < 1.0f)
+			volume += 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) // decrease volume
+		if (volume > 0.0f)
+			volume -= 0.1f;
 }
 
 // loads a cubemap texture from 6 individual texture faces
