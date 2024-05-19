@@ -11,7 +11,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <irrKlang.h>
+
 namespace fs = std::filesystem;
+namespace irr = irrklang;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -22,12 +25,14 @@ unsigned int LoadCubemap(std::vector<std::string> faces);
 void RenderScene(Shader& shader, Model& driverWagon, Model& terrain, Model& brasov, Model& bucharest);
 glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, float& degreesZ);
 void Menu();
+void PlaySounds();
 
 // settings
 constexpr unsigned int SCR_WIDTH = 1920;
 constexpr unsigned int SCR_HEIGHT = 1080;
 float speed = 1.0f;
 
+bool isDay = true;
 bool isMoving = false;
 
 // camera
@@ -35,6 +40,11 @@ Camera camera(glm::vec3(800.0f, -100.0f, -935.0f));
 float lastX = static_cast<float>(SCR_WIDTH) / 2.0;
 float lastY = static_cast<float>(SCR_HEIGHT) / 2.0;
 bool firstMouse = true;
+
+// Sound Engine
+irr::ISoundEngine* soundEngine = irr::createIrrKlangDevice();
+
+
 
 // timing
 float deltaTime = 0.0f;
@@ -74,6 +84,14 @@ int main()
 {
 	Menu();
 
+	if (!soundEngine)
+	{
+		std::cout << "Error: Could not initialize sound engine" << std::endl;
+		return 1;
+	}
+
+	soundEngine->setSoundVolume(0.5f);
+
 	// glfw: initialize and configure
 	// ------------------------------
 	std::cout << "glfw: initialize and configure\n";
@@ -91,6 +109,8 @@ int main()
 		glfwTerminate();
 		return -1;
 	}
+	// make the window full screen borderless
+	glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -247,8 +267,6 @@ int main()
 	skyboxShader.SetInt("skybox", 0);
 
 	// lighting info
-	
-	// -779.145 2466.52 - 90.1038
 	float ambientStrength = 0.7f;
 	float specularStrength = 2.1f;
 	float diffuseStrength = 2.0f;
@@ -270,6 +288,7 @@ int main()
 		// input
 		// -----
 		processInput(window);
+		PlaySounds();
 
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
@@ -334,6 +353,7 @@ int main()
 			ambientStrength = 0.7f;
 			specularStrength = 2.1f;
 			diffuseStrength = 2.0f;
+			isDay = true;
 		}
 		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS) // night
 		{
@@ -341,6 +361,12 @@ int main()
 			specularStrength = 1.0f;
 			diffuseStrength = 1.4f;
 			ambientStrength = 0.2f;
+			isDay = false;
+		}
+		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		{
+			trainPosition = { 1373.0f, -231.5f, -1482.0f };
+			trainRotation = { 0.0f, 315.3f, 0.0f };
 		}
 
 		switch (cameraType)
@@ -424,6 +450,7 @@ int main()
 	// ------------------------------------------------------------------------
 	glDeleteVertexArrays(1, &skyboxVAO);
 	glDeleteBuffers(1, &skyboxVBO);
+	soundEngine->drop();
 
 	glfwTerminate();
 	return 0;
@@ -901,6 +928,8 @@ glm::vec3 MoveTrain(glm::vec3& trainPosition, float& degreesX, float& degreesY, 
 	{
 		trainPosition.x -= 0.999f * speed;
 		trainPosition.z += 0.065f * speed;
+
+		isMoving = false;
 	}
 
 	return glm::vec3(trainPosition.x, trainPosition.y, trainPosition.z);
@@ -917,4 +946,45 @@ void Menu()
 		"<5> Night Mode\n"
 		"<+> Increase train speed\n"
 		"<-> Decrease train speed\n";
+}
+
+void PlaySounds()
+{
+	fs::path localPath = fs::current_path();
+	std::string soundsFolder = localPath.string() + "/Resources/sounds";
+	std::string nightSound = soundsFolder + "/nightsound.mp3";
+	std::string daySound = soundsFolder + "/daysound.mp3";
+	std::string trainSound = soundsFolder + "/trainsound.mp3";
+	// If the train is moving and the sound is not playing, play the sound
+	if (isMoving && !soundEngine->isCurrentlyPlaying(trainSound.c_str()))
+	{
+		soundEngine->play2D(trainSound.c_str(), true);
+	}
+	// If the train is not moving and the sound is playing, stop the sound
+	else if (!isMoving && soundEngine->isCurrentlyPlaying(trainSound.c_str()))
+	{
+		soundEngine->stopAllSounds();
+	}
+
+	// If it's night and the night sound is not playing, play the night sound
+	if (!isDay && !soundEngine->isCurrentlyPlaying(nightSound.c_str()))
+	{
+		soundEngine->play2D(nightSound.c_str(), true);
+	}
+	// If it's day and the night sound is playing, stop the night sound
+	else if (isDay && soundEngine->isCurrentlyPlaying(nightSound.c_str()))
+	{
+		soundEngine->stopAllSounds();
+	}
+
+	// If it's day and the day sound is not playing, play the day sound
+	if (isDay && !soundEngine->isCurrentlyPlaying(daySound.c_str()))
+	{
+		soundEngine->play2D(daySound.c_str(), true);
+	}
+	// If it's night and the day sound is playing, stop the day sound
+	else if (!isDay && soundEngine->isCurrentlyPlaying(daySound.c_str()))
+	{
+		soundEngine->stopAllSounds();
+	}
 }
